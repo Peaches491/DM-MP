@@ -26,3 +26,12 @@
 *.exe
 *.out
 *.app
+
+# LaTeX Files
+*.aux
+*.dvi
+*.log
+*.synctex.gz
+
+# JetBrains files
+.idea/
