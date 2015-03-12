@@ -2,20 +2,23 @@
 #include <boost/bind.hpp>
 using namespace OpenRAVE;
 
-class MyNewModule : public ModuleBase
+class RRTModule : public ModuleBase
 {
+private:
+    EnvironmentBasePtr env;
 public:
-    MyNewModule(EnvironmentBasePtr penv, std::istream& ss) : ModuleBase(penv) {
-        RegisterCommand("MyCommand",boost::bind(&MyNewModule::MyCommand,this,_1,_2),
+    RRTModule(EnvironmentBasePtr penv, std::istream& ss) : ModuleBase(penv) {
+        RegisterCommand("MyCommand",boost::bind(&RRTModule::MyCommand,this,_1,_2),
                         "This is an example command");
+        this->env = penv;
     }
-    virtual ~MyNewModule() {}
+    virtual ~RRTModule() {}
     
     bool MyCommand(std::ostream& sout, std::istream& sinput)
     {
         std::string input;
         sinput >> input;
-        sout << "output";
+        sout << "In Collision: " << env.;
         return true;
     }
 };
@@ -24,8 +27,8 @@ public:
 // called to create a new plugin
 InterfaceBasePtr CreateInterfaceValidated(InterfaceType type, const std::string& interfacename, std::istream& sinput, EnvironmentBasePtr penv)
 {
-    if( type == PT_Module && interfacename == "mynewmodule" ) {
-        return InterfaceBasePtr(new MyNewModule(penv,sinput));
+    if( type == PT_Module && interfacename == "rrtmodule" ) {
+        return InterfaceBasePtr(new RRTModule(penv,sinput));
     }
 
     return InterfaceBasePtr();
@@ -34,7 +37,7 @@ InterfaceBasePtr CreateInterfaceValidated(InterfaceType type, const std::string&
 // called to query available plugins
 void GetPluginAttributesValidated(PLUGININFO& info)
 {
-info.interfacenames[PT_Module].push_back("MyNewModule");
+info.interfacenames[PT_Module].push_back("RRTModule");
     
 }
 
