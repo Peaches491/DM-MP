@@ -7,9 +7,17 @@
 #IncludeRegexTransform: 
 
 /home/peaches/GitHub/DM-MP/Homework 3/rrtplugin/rrtplugin.cpp
+algorithm
+-
 openrave/plugin.h
 -
 boost/bind.hpp
+-
+boost/foreach.hpp
+-
+boost/tokenizer.hpp
+-
+boost/assign/list_of.hpp
 -
 
 /usr/local/include/openrave-0.9/openrave/collisionchecker.h

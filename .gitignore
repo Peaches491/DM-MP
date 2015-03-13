@@ -38,3 +38,6 @@
 
 # Vim files
 *.swp
+
+# Build directory
+Homework\ 3/rrtplugin/build/

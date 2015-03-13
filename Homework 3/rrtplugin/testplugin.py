@@ -6,6 +6,6 @@ try:
     env = Environment()
     env.Load('scenes/myscene.env.xml')
     RRTModule = RaveCreateModule(env, 'RRTModule')
-    print RRTModule.SendCommand('MyCommand', 'test_string')
+    print RRTModule.SendCommand('RunRRT test_string')
 finally:
     RaveDestroy()

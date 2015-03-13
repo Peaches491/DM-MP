@@ -32,7 +32,7 @@ def tuckarms(env,robot):
 if __name__ == "__main__":
 
     env = Environment()
-    env.SetViewer('qtcoin')
+    # env.SetViewer('qtcoin')
     env.Reset()        
     # load a scene from ProjectRoom environment XML file
     env.Load('hw3.env.xml')
@@ -58,7 +58,10 @@ if __name__ == "__main__":
         # the active DOF are translation in X and Y and rotation about the Z axis of the base of the robot.
         jointnames = ['l_shoulder_lift_joint', 'l_elbow_flex_joint', 'l_wrist_flex_joint',
                       'r_shoulder_lift_joint', 'r_elbow_flex_joint', 'r_wrist_flex_joint']
+
         robot.SetActiveDOFs([robot.GetJoint(name).GetDOFIndex() for name in jointnames])
+
+        print [robot.GetJoint(name).GetDOFIndex() for name in jointnames]
 
         goalconfig = [0.449, -0.201, 0, 0, 0, 0, 0]
 
@@ -67,7 +70,8 @@ if __name__ == "__main__":
         # from the current configuration of the left arm to
         # the goalconfig
 
-        print MyNewModule.SendCommand('help')
+        print str(goalconfig).strip("[]")
+        print MyNewModule.SendCommand('RunRRT ' + str(goalconfig).strip("[]"))
  
         # ### END OF YOUR CODE ###
     waitrobot(robot)

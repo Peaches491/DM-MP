@@ -1,6 +1,8 @@
+set -e
+
 cd rrtplugin
 make
-make install
+sudo make install
 clear
 python testplugin.py
 cd ..

@@ -1,6 +1,7 @@
+set -e
 cd rrtplugin
 make
-make install
+sudo make install
 clear
 cd ..
 python HW3.py
