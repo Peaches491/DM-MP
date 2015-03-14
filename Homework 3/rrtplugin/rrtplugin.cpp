@@ -4,6 +4,7 @@
 #include <boost/foreach.hpp>
 #include <boost/tokenizer.hpp>
 #include <boost/assign/list_of.hpp>
+#include <iostream>
 
 
 using namespace OpenRAVE;
@@ -17,6 +18,9 @@ private:
     std::vector<double> j_min, j_max;
 public:
     RRTModule(EnvironmentBasePtr penv, std::istream &ss) : ModuleBase(penv) {
+
+        std::cout << "Constructing plugin... ";
+
         RegisterCommand("RunRRT",
                 boost::bind(&RRTModule::RunRRT, this, _1, _2),
                 "This is an example command");
@@ -34,17 +38,26 @@ public:
         joint_idxs.push_back(30);
         joint_idxs.push_back(32);
         robot->GetDOFLimits(j_min, j_max, joint_idxs);
+
+        std::cout << "DONE" << std::endl;
     }
 
     virtual ~RRTModule() {
     }
 
     bool RunRRT(std::ostream &sout, std::istream &sinput) {
+
+        sout << "Converting input... ";
+        sout.flush();
+
         std::istreambuf_iterator<char> eos;
         std::string input(std::istreambuf_iterator<char>(sinput), eos);
         std::stringstream ss(input);
 
-        float i;
+        sout << "DONE" << std::endl;
+
+
+        double i;
         while (ss >> i) {
             goal_config.push_back(i);
             if (ss.peek() == ',')

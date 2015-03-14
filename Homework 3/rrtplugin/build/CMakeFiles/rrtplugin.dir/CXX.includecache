@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/peaches/GitHub/DM-MP/Homework 3/rrtplugin/rrtplugin.cpp
+/home/millerd/GitHub/DM-MP/Homework 3/rrtplugin/rrtplugin.cpp
 algorithm
 -
 openrave/plugin.h
@@ -19,16 +19,18 @@ boost/tokenizer.hpp
 -
 boost/assign/list_of.hpp
 -
+iostream
+-
 
-/usr/local/include/openrave-0.9/openrave/collisionchecker.h
+/usr/include/openrave-0.8/openrave/collisionchecker.h
 
-/usr/local/include/openrave-0.9/openrave/config.h
+/usr/include/openrave-0.8/openrave/config.h
 
-/usr/local/include/openrave-0.9/openrave/controller.h
+/usr/include/openrave-0.8/openrave/controller.h
 
-/usr/local/include/openrave-0.9/openrave/environment.h
+/usr/include/openrave-0.8/openrave/environment.h
 
-/usr/local/include/openrave-0.9/openrave/geometry.h
+/usr/include/openrave-0.8/openrave/geometry.h
 cmath
 -
 vector
@@ -44,15 +46,15 @@ cstdlib
 cassert
 -
 
-/usr/local/include/openrave-0.9/openrave/iksolver.h
+/usr/include/openrave-0.8/openrave/iksolver.h
 
-/usr/local/include/openrave-0.9/openrave/interface.h
+/usr/include/openrave-0.8/openrave/interface.h
 
-/usr/local/include/openrave-0.9/openrave/interfacehashes.h
+/usr/include/openrave-0.8/openrave/interfacehashes.h
 
-/usr/local/include/openrave-0.9/openrave/kinbody.h
+/usr/include/openrave-0.8/openrave/kinbody.h
 
-/usr/local/include/openrave-0.9/openrave/mathextra.h
+/usr/include/openrave-0.8/openrave/mathextra.h
 cassert
 -
 cmath
@@ -60,9 +62,9 @@ cmath
 climits
 -
 
-/usr/local/include/openrave-0.9/openrave/module.h
+/usr/include/openrave-0.8/openrave/module.h
 
-/usr/local/include/openrave-0.9/openrave/openrave.h
+/usr/include/openrave-0.8/openrave/openrave.h
 cstdio
 -
 stdarg.h
@@ -93,8 +95,6 @@ fstream
 -
 sstream
 -
-boost/version.hpp
--
 boost/function.hpp
 -
 boost/shared_ptr.hpp
@@ -106,8 +106,6 @@ boost/tuple/tuple.hpp
 boost/enable_shared_from_this.hpp
 -
 boost/thread/mutex.hpp
--
-boost/thread/shared_mutex.hpp
 -
 boost/thread/thread.hpp
 -
@@ -162,27 +160,27 @@ openrave/viewer.h
 openrave/environment.h
 -
 
-/usr/local/include/openrave-0.9/openrave/physicsengine.h
+/usr/include/openrave-0.8/openrave/physicsengine.h
 
-/usr/local/include/openrave-0.9/openrave/planner.h
+/usr/include/openrave-0.8/openrave/planner.h
 
-/usr/local/include/openrave-0.9/openrave/plugin.h
+/usr/include/openrave-0.8/openrave/plugin.h
 openrave/openrave.h
 -
 boost/format.hpp
 -
 
-/usr/local/include/openrave-0.9/openrave/plugininfo.h
+/usr/include/openrave-0.8/openrave/plugininfo.h
 
-/usr/local/include/openrave-0.9/openrave/robot.h
+/usr/include/openrave-0.8/openrave/robot.h
 
-/usr/local/include/openrave-0.9/openrave/sensor.h
+/usr/include/openrave-0.8/openrave/sensor.h
 
-/usr/local/include/openrave-0.9/openrave/sensorsystem.h
+/usr/include/openrave-0.8/openrave/sensorsystem.h
 
-/usr/local/include/openrave-0.9/openrave/spacesampler.h
+/usr/include/openrave-0.8/openrave/spacesampler.h
 
-/usr/local/include/openrave-0.9/openrave/trajectory.h
+/usr/include/openrave-0.8/openrave/trajectory.h
 
-/usr/local/include/openrave-0.9/openrave/viewer.h
+/usr/include/openrave-0.8/openrave/viewer.h
 

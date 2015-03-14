@@ -31,17 +31,11 @@ CMAKE_COMMAND = /usr/bin/cmake
 # The command to remove a file.
 RM = /usr/bin/cmake -E remove -f
 
-# Escaping for special characters.
-EQUALS = =
-
-# The program to use to edit the cache.
-CMAKE_EDIT_COMMAND = /usr/bin/ccmake
-
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = "/home/peaches/GitHub/DM-MP/Homework 3/rrtplugin"
+CMAKE_SOURCE_DIR = "/home/millerd/GitHub/DM-MP/Homework 3/rrtplugin"
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = "/home/peaches/GitHub/DM-MP/Homework 3/rrtplugin/build"
+CMAKE_BINARY_DIR = "/home/millerd/GitHub/DM-MP/Homework 3/rrtplugin/build"
 
 # Include any dependencies generated for this target.
 include CMakeFiles/rrtplugin.dir/depend.make
@@ -54,17 +48,17 @@ include CMakeFiles/rrtplugin.dir/flags.make
 
 CMakeFiles/rrtplugin.dir/rrtplugin.cpp.o: CMakeFiles/rrtplugin.dir/flags.make
 CMakeFiles/rrtplugin.dir/rrtplugin.cpp.o: ../rrtplugin.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report "/home/peaches/GitHub/DM-MP/Homework 3/rrtplugin/build/CMakeFiles" $(CMAKE_PROGRESS_1)
+	$(CMAKE_COMMAND) -E cmake_progress_report "/home/millerd/GitHub/DM-MP/Homework 3/rrtplugin/build/CMakeFiles" $(CMAKE_PROGRESS_1)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/rrtplugin.dir/rrtplugin.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/rrtplugin.dir/rrtplugin.cpp.o -c "/home/peaches/GitHub/DM-MP/Homework 3/rrtplugin/rrtplugin.cpp"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -DOPENRAVE_DLL -DOPENRAVE_CORE_DLL  -o CMakeFiles/rrtplugin.dir/rrtplugin.cpp.o -c "/home/millerd/GitHub/DM-MP/Homework 3/rrtplugin/rrtplugin.cpp"
 
 CMakeFiles/rrtplugin.dir/rrtplugin.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/rrtplugin.dir/rrtplugin.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E "/home/peaches/GitHub/DM-MP/Homework 3/rrtplugin/rrtplugin.cpp" > CMakeFiles/rrtplugin.dir/rrtplugin.cpp.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DOPENRAVE_DLL -DOPENRAVE_CORE_DLL  -E "/home/millerd/GitHub/DM-MP/Homework 3/rrtplugin/rrtplugin.cpp" > CMakeFiles/rrtplugin.dir/rrtplugin.cpp.i
 
 CMakeFiles/rrtplugin.dir/rrtplugin.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/rrtplugin.dir/rrtplugin.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S "/home/peaches/GitHub/DM-MP/Homework 3/rrtplugin/rrtplugin.cpp" -o CMakeFiles/rrtplugin.dir/rrtplugin.cpp.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DOPENRAVE_DLL -DOPENRAVE_CORE_DLL  -S "/home/millerd/GitHub/DM-MP/Homework 3/rrtplugin/rrtplugin.cpp" -o CMakeFiles/rrtplugin.dir/rrtplugin.cpp.s
 
 CMakeFiles/rrtplugin.dir/rrtplugin.cpp.o.requires:
 .PHONY : CMakeFiles/rrtplugin.dir/rrtplugin.cpp.o.requires
@@ -92,23 +86,6 @@ librrtplugin.so: CMakeFiles/rrtplugin.dir/link.txt
 CMakeFiles/rrtplugin.dir/build: librrtplugin.so
 .PHONY : CMakeFiles/rrtplugin.dir/build
 
-# Object files for target rrtplugin
-rrtplugin_OBJECTS = \
-"CMakeFiles/rrtplugin.dir/rrtplugin.cpp.o"
-
-# External object files for target rrtplugin
-rrtplugin_EXTERNAL_OBJECTS =
-
-CMakeFiles/CMakeRelink.dir/librrtplugin.so: CMakeFiles/rrtplugin.dir/rrtplugin.cpp.o
-CMakeFiles/CMakeRelink.dir/librrtplugin.so: CMakeFiles/rrtplugin.dir/build.make
-CMakeFiles/CMakeRelink.dir/librrtplugin.so: CMakeFiles/rrtplugin.dir/relink.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --red --bold "Linking CXX shared library CMakeFiles/CMakeRelink.dir/librrtplugin.so"
-	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/rrtplugin.dir/relink.txt --verbose=$(VERBOSE)
-
-# Rule to relink during preinstall.
-CMakeFiles/rrtplugin.dir/preinstall: CMakeFiles/CMakeRelink.dir/librrtplugin.so
-.PHONY : CMakeFiles/rrtplugin.dir/preinstall
-
 CMakeFiles/rrtplugin.dir/requires: CMakeFiles/rrtplugin.dir/rrtplugin.cpp.o.requires
 .PHONY : CMakeFiles/rrtplugin.dir/requires
 
@@ -117,6 +94,6 @@ CMakeFiles/rrtplugin.dir/clean:
 .PHONY : CMakeFiles/rrtplugin.dir/clean
 
 CMakeFiles/rrtplugin.dir/depend:
-	cd "/home/peaches/GitHub/DM-MP/Homework 3/rrtplugin/build" && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" "/home/peaches/GitHub/DM-MP/Homework 3/rrtplugin" "/home/peaches/GitHub/DM-MP/Homework 3/rrtplugin" "/home/peaches/GitHub/DM-MP/Homework 3/rrtplugin/build" "/home/peaches/GitHub/DM-MP/Homework 3/rrtplugin/build" "/home/peaches/GitHub/DM-MP/Homework 3/rrtplugin/build/CMakeFiles/rrtplugin.dir/DependInfo.cmake" --color=$(COLOR)
+	cd "/home/millerd/GitHub/DM-MP/Homework 3/rrtplugin/build" && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" "/home/millerd/GitHub/DM-MP/Homework 3/rrtplugin" "/home/millerd/GitHub/DM-MP/Homework 3/rrtplugin" "/home/millerd/GitHub/DM-MP/Homework 3/rrtplugin/build" "/home/millerd/GitHub/DM-MP/Homework 3/rrtplugin/build" "/home/millerd/GitHub/DM-MP/Homework 3/rrtplugin/build/CMakeFiles/rrtplugin.dir/DependInfo.cmake" --color=$(COLOR)
 .PHONY : CMakeFiles/rrtplugin.dir/depend
 
