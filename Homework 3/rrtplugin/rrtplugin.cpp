@@ -31,12 +31,13 @@ public:
         this->goal_config = std::vector<double>();
 
         std::vector<int> joint_idxs;
+        joint_idxs.push_back(15);
         joint_idxs.push_back(16);
+        joint_idxs.push_back(17);
         joint_idxs.push_back(18);
+        joint_idxs.push_back(19);
         joint_idxs.push_back(20);
-        joint_idxs.push_back(28);
-        joint_idxs.push_back(30);
-        joint_idxs.push_back(32);
+        joint_idxs.push_back(21);
         robot->GetDOFLimits(j_min, j_max, joint_idxs);
 
         std::cout << "DONE" << std::endl;
@@ -65,7 +66,7 @@ public:
         }
 
         sout << "In Collision: " << this->env->CheckCollision(robot) << std::endl;
-        for (int i = 0; i < goal_config.size(); i++) {
+        for (uint i = 0; i < goal_config.size(); i++) {
             sout << "[" << j_min.at(i) <<
                     " " << goal_config.at(i) <<
                     " " << j_max.at(i) <<

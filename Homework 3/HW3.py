@@ -56,8 +56,9 @@ if __name__ == "__main__":
 
     with env:
         # the active DOF are translation in X and Y and rotation about the Z axis of the base of the robot.
-        jointnames = ['l_shoulder_pan_joint', 'l_shoulder_lift_joint', 'l_elbow_flex_joint', 
-                      'l_wrist_flex_joint',' l_forearm_roll_joint', 'l_wrist_flex_joint', 
+        jointnames = ['l_shoulder_pan_joint',   'l_shoulder_lift_joint',
+                      'l_upper_arm_roll_joint', 'l_elbow_flex_joint',
+                      'l_forearm_roll_joint',   'l_wrist_flex_joint',
                       'l_wrist_roll_joint']
 
         robot.SetActiveDOFs([robot.GetJoint(name).GetDOFIndex() for name in jointnames])
