@@ -7,40 +7,51 @@
 
 #include <vector>
 #include <memory>
+#include "RRTConfig.h"
 
 class RRTNode {
 private:
-    std::shared_ptr<RRTNode> _parent;
+    int _parent_id;
     std::vector<double> _config;
 public:
     static int _currentID;
     const int _id;
-    RRTNode(std::vector<double> _values, std::shared_ptr<RRTNode> _parent)
-        : _parent(_parent)
-        , _id(++_currentID)
+
+    double dist_to(std::vector<double>* _values, RRTConfig* cfg);
+    void print(std::ostream& sout);
+
+    RRTNode(std::vector<double> _values, int _parent_id)
+//        : _parent(_parent)
+        : _id(++_currentID)
     {
-        _config = _values;
+        this->_parent_id = _parent_id;
+        this->_config = _values;
     };
-    double dist_to(std::vector<double>* _values);
     std::vector<double>* get_config(){
         return &_config;
     }
 };
-typedef std::shared_ptr<RRTNode> RRTNodePtr;
 
 
 class NodeTree {
 private:
+    RRTConfig* cfg;
     std::vector<RRTNode> _nodes;
 //    std::unordered_map _node_map;
 
 public:
 //    typedef pair<const Key, T> value_type;
 
-    int add_node(std::vector<double> _values, RRTNodePtr _parent);
+    NodeTree(RRTConfig* cfg) : cfg(cfg){};
+
+    int add_node(std::vector<double> _values, int _parent);
     int add_node(std::vector<double> _values);
-    bool delete_node(RRTNodePtr _node);
-    RRTNode* nearest_node(std::vector<double> _values);
+    bool delete_node(int _node);
+    void print_tree(std::ostream& sout, int depth=5);
+    int nearest_node(std::vector<double> _values);
+    std::vector<RRTNode> get_nodes() {
+        return _nodes;
+    }
 };
 
 #endif //_DM_MP_RRTDATA_H_

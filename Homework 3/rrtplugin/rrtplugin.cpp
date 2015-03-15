@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cassert>
 #include <iostream>
+#include <random>
 #include <string>
 
 #include <boost/bind.hpp>
@@ -134,7 +135,14 @@ public:
         assert(j_max.size() == (uint)dimension);
         assert(start_config.size() == (uint)dimension);
 
-        RRT* rrt = new RRT(j_min, j_max, ident, sout);
+        for(int i = 0; i < dimension; i++) {
+            if(ident.at(i)) {
+                j_min.at(i) = fmod(j_min.at(i), M_PI);
+                j_max.at(i) = fmod(j_max.at(i), M_PI);
+            }
+        }
+
+        RRT* rrt = new RRT(new RRTConfig(j_min, j_max, ident, dimension, sout));
 
         rrt->do_search(start_config, goal_config, step_size, goal_freq);
 

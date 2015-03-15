@@ -5,17 +5,16 @@
 #include <vector>
 #include <random>
 #include <iostream>
+#include <time.h>
+#include <stdio.h>
+
 #include "RRTData.h"
+#include "RRTConfig.h"
 
 class RRT {
 private:
-    NodeTree rrt = NodeTree();
-    std::vector<double> j_min, j_max;
-    std::vector<int> ident;
-    ulong c_dim = 0;
-
-    std::default_random_engine _rand;
-    std::ostream &sout;
+    std::ostream& sout;
+    std::default_random_engine _rand = std::default_random_engine(time(NULL));
 
     std::vector<double> sample();
     double dRand(double fMin, double fMax) {
@@ -24,11 +23,17 @@ private:
     }
 
 public:
-    RRT(std::vector<double> _j_min, std::vector<double> _j_max,
-            std::vector<int> ident, std::ostream &sout);
+    RRTConfig* cfg;
+    NodeTree root;
 
-    std::vector<RRTNodePtr> do_search(std::vector<double> start_config, std::vector<double> _goal_cfg,
+    RRT(RRTConfig* cfg);
+    std::vector<RRTNode*> do_search(std::vector<double> start_config, std::vector<double> _goal_cfg,
         double step_size, double goal_freq);
+
+
+    bool is_ident(int i) {
+        return cfg->ident.at(i) == 1;
+    };
 };
 
 #endif //_DM_MP_RRT_H_
