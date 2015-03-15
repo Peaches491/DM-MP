@@ -28,9 +28,11 @@ vector<RRTNode*> RRT::do_search(vector<double> start_config, vector<double> _goa
 }
 
 vector<double> RRT::sample(bool non_collide) {
+//    cfg->sout << "Taking Sample" << endl;
     vector<double> sample;
     int samples = 0;
     do{
+        sample.clear();
         for(uint i = 0; i < cfg->c_dim; i++){
             sample.push_back(this->dRand(cfg->j_min.at(i), cfg->j_max.at(i)));
 //            if(cfg->ident.at(i)) {
@@ -42,11 +44,12 @@ vector<double> RRT::sample(bool non_collide) {
         }
         samples++;
     } while(non_collide && collides(sample));
-    sout << "Samples taken: " << samples << endl;
+//    sout << "Samples taken: " << samples << endl;
     return sample;
 }
 
 bool RRT::collides(vector<double> _joints) {
+//    cfg->sout << "Checking" << endl;
     cfg->robot->SetActiveDOFValues(_joints);
     // TODO Always collides? =[
     return cfg->env->CheckCollision(cfg->robot);
