@@ -142,7 +142,7 @@ public:
             }
         }
 
-        RRT* rrt = new RRT(new RRTConfig(j_min, j_max, ident, dimension, sout));
+        RRT* rrt = new RRT(new RRTConfig(j_min, j_max, ident, dimension, sout, env, robot));
 
         rrt->do_search(start_config, goal_config, step_size, goal_freq);
 

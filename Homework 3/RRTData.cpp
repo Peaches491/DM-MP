@@ -6,7 +6,6 @@
 #include <cmath>
 #include <limits>
 #include <vector>
-#include <boost/smart_ptr/shared_ptr.hpp>
 #include "RRTData.h"
 #include "RRT.h"
 

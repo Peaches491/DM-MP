@@ -16,7 +16,7 @@ private:
     std::ostream& sout;
     std::default_random_engine _rand = std::default_random_engine(time(NULL));
 
-    std::vector<double> sample();
+    std::vector<double> sample(bool non_collide = true);
     double dRand(double fMin, double fMax) {
         std::uniform_real_distribution<double> unif(fMin, fMax);
         return unif(_rand);
@@ -29,7 +29,7 @@ public:
     RRT(RRTConfig* cfg);
     std::vector<RRTNode*> do_search(std::vector<double> start_config, std::vector<double> _goal_cfg,
         double step_size, double goal_freq);
-
+    bool collides(std::vector<double> _joints);
 
     bool is_ident(int i) {
         return cfg->ident.at(i) == 1;
