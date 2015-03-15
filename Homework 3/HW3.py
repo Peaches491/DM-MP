@@ -63,17 +63,27 @@ if __name__ == "__main__":
 
         robot.SetActiveDOFs([robot.GetJoint(name).GetDOFIndex() for name in jointnames])
 
-        print [robot.GetJoint(name).GetDOFIndex() for name in jointnames]
 
         goalconfig = [0.449, -0.201, 0, 0, 0, 0, 0]
+        print "Active DOF Values: ", robot.GetActiveDOFValues()
 
         # ### YOUR CODE HERE ###
         # Call your plugin to plan, draw, and execute a path
         # from the current configuration of the left arm to
         # the goalconfig
 
-        print str(goalconfig).strip("[]")
-        print MyNewModule.SendCommand('RunRRT ' + str(goalconfig).strip("[]"))
+        cmd = 'RunRRT '
+        cmd += '-n ' + str(len(goalconfig)) + ' '
+        cmd += '-s ' + str([float(x) for x in robot.GetActiveDOFValues()]).translate(None, "[],") + ' '
+        cmd += '-g ' + str(goalconfig).translate(None, "[],") + ' '
+        cmd += '-d ' + str(0.05) + ' '
+        cmd += '-f ' + str(0.05) + ' '
+        cmd += '-i ' + str([int(robot.GetJointFromDOFIndex(x).IsCircular(0)) for x in robot.GetActiveDOFIndices()]).translate(None, "[],") + ' '
+
+        print "Sending command"
+        print cmd
+
+        print MyNewModule.SendCommand(cmd)
  
         # ### END OF YOUR CODE ###
     waitrobot(robot)

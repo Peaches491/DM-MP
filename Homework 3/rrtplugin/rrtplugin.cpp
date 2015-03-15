@@ -1,21 +1,26 @@
-#include <algorithm>
+
 #include <openrave/plugin.h>
+
+#include <algorithm>
+#include <cassert>
+#include <iostream>
+#include <string>
+
 #include <boost/bind.hpp>
 #include <boost/foreach.hpp>
 #include <boost/tokenizer.hpp>
 #include <boost/assign/list_of.hpp>
-#include <iostream>
 
+#include "../RRT.h"
 
 using namespace OpenRAVE;
+using namespace std;
 
 class RRTModule : public ModuleBase {
 private:
     EnvironmentBasePtr env;
     std::vector<RobotBasePtr> robots;
     RobotBasePtr robot;
-    std::vector<double> goal_config;
-    std::vector<double> j_min, j_max;
 public:
     RRTModule(EnvironmentBasePtr penv, std::istream &ss) : ModuleBase(penv) {
 
@@ -24,11 +29,95 @@ public:
         RegisterCommand("RunRRT",
                 boost::bind(&RRTModule::RunRRT, this, _1, _2),
                 "This is an example command");
-        this->env = penv;
-        this->robots = std::vector<RobotBasePtr>();
-        this->env->GetRobots(robots);
-        this->robot = robots.at(0);
-        this->goal_config = std::vector<double>();
+        env = penv;
+        robots = std::vector<RobotBasePtr>();
+        env->GetRobots(robots);
+        robot = robots.at(0);
+
+        std::cout << "DONE" << std::endl;
+    }
+
+    virtual ~RRTModule() {
+    }
+
+    bool RunRRT(std::ostream &sout, std::istream &sinput) {
+        int dimension = -1;
+        std::vector<double> start_config, goal_config;
+        std::vector<double> j_min, j_max;
+        std::vector<int> ident;
+        double step_size = 0.0, goal_freq = 0.0;
+
+        sout << "Converting input... ";
+        string str;
+        getline(sinput, str);
+        std::stringstream ss(str);
+        std::istream_iterator<std::string> begin(ss);
+        std::istream_iterator<std::string> end;
+        std::vector<std::string> arg_vec(begin, end);
+        sout << "DONE" << endl;
+
+        // Loop through the tokenized string, looking for tokens which begin with a single dash.
+        // Populate prameters accordingly
+        for(uint i = 0; i < arg_vec.size(); i++) {
+//            sout << "Interpreting: " << arg_vec.at(i) << endl;
+            if(arg_vec.at(i)[0] == '-'){
+                switch(arg_vec.at(i)[1]) {
+                    case 'n':
+                        dimension = atoi(arg_vec.at(++i).c_str());
+                    case 's':
+                        for(int j_idx = 0; j_idx < dimension; j_idx++){
+                            i++;
+                            start_config.push_back(atof(arg_vec.at(i).c_str()));
+                        }
+                        break;
+                    case 'g':
+                        for(int j_idx = 0; j_idx < dimension; j_idx++){
+                            i++;
+                            goal_config.push_back(atof(arg_vec.at(i).c_str()));
+                        }
+                        break;
+                    case 'i':
+                        for(int j_idx = 0; j_idx < dimension; j_idx++){
+                            i++;
+                            ident.push_back(atoi(arg_vec.at(i).c_str()));
+                        }
+                        break;
+                    case 'd':
+                        step_size = atof(arg_vec.at(++i).c_str());
+                        break;
+                    case 'f':
+                        goal_freq = atof(arg_vec.at(++i).c_str());
+                        break;
+                    default:
+                        sout << "Skipping token " << arg_vec.at(i) << endl;
+                }
+            }
+        }
+
+
+        sout << "Dimension: " << dimension << endl;
+
+        sout << "Starting pose: ";
+        for(auto j : start_config){
+            sout << j << ", ";
+        }
+        sout << endl;
+
+        sout << "Goal Pose: ";
+        for(auto j : goal_config){
+            sout << j << ", ";
+        }
+        sout << endl;
+
+        sout << "Identification: ";
+        for(auto j : ident){
+            sout << j << ", ";
+        }
+        sout << endl;
+
+        sout << "Step size: " << step_size << endl;
+
+        sout << "Goal sampling frequency: " << goal_freq << endl;
 
         std::vector<int> joint_idxs;
         joint_idxs.push_back(15);
@@ -40,38 +129,14 @@ public:
         joint_idxs.push_back(21);
         robot->GetDOFLimits(j_min, j_max, joint_idxs);
 
-        std::cout << "DONE" << std::endl;
-    }
+        assert(dimension > 0);
+        assert(j_min.size() == (uint)dimension);
+        assert(j_max.size() == (uint)dimension);
+        assert(start_config.size() == (uint)dimension);
 
-    virtual ~RRTModule() {
-    }
+        RRT* rrt = new RRT(j_min, j_max, ident, sout);
 
-    bool RunRRT(std::ostream &sout, std::istream &sinput) {
-
-        sout << "Converting input... ";
-        sout.flush();
-
-        std::istreambuf_iterator<char> eos;
-        std::string input(std::istreambuf_iterator<char>(sinput), eos);
-        std::stringstream ss(input);
-
-        sout << "DONE" << std::endl;
-
-
-        double i;
-        while (ss >> i) {
-            goal_config.push_back(i);
-            if (ss.peek() == ',')
-                ss.ignore();
-        }
-
-        sout << "In Collision: " << this->env->CheckCollision(robot) << std::endl;
-        for (uint i = 0; i < goal_config.size(); i++) {
-            sout << "[" << j_min.at(i) <<
-                    " " << goal_config.at(i) <<
-                    " " << j_max.at(i) <<
-                    "]" << std::endl;
-        }
+        rrt->do_search(start_config, goal_config, step_size, goal_freq);
 
         return true;
     }

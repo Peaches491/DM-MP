@@ -1,10 +1,10 @@
 cmake_minimum_required (VERSION 2.6.0)
 project(rrtplugin)
-find_package(OpenRAVE 0.8 EXACT)
+find_package(OpenRAVE 0.8.0 EXACT)
 find_package(OpenRAVE 0.9.0 EXACT)
 
 if( CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX )
-  add_definitions("-fno-strict-aliasing -Wall")
+  add_definitions("-fno-strict-aliasing -Wall -std=c++11")
 endif( CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX )
 
 # optional in case boost is used
@@ -12,7 +12,7 @@ find_package(Boost ${OpenRAVE_Boost_VERSION} EXACT)
 
 include_directories(${OpenRAVE_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 link_directories(${OpenRAVE_LIBRARY_DIRS} ${Boost_LIBRARY_DIRS})
-add_library(rrtplugin SHARED rrtplugin.cpp)
+add_library(rrtplugin SHARED rrtplugin.cpp ../RRT.h ../RRT.cpp ../RRTData.h ../RRTData.cpp)
 set_target_properties(rrtplugin PROPERTIES COMPILE_FLAGS "${OpenRAVE_CXX_FLAGS}" LINK_FLAGS "${OpenRAVE_LINK_FLAGS}")
 target_link_libraries(rrtplugin ${OpenRAVE_LIBRARIES})
 install(TARGETS rrtplugin DESTINATION .)
