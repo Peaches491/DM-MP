@@ -7,14 +7,17 @@
 #include <limits>
 #include "RRTData.h"
 
+using namespace std;
+
 int RRTNode::_currentID = 0;
 
 double RRTNode::dist_to(std::vector<double>* _values) {
     double sum = 0;
     for(uint i = 0; i < _config.size(); i++) {
+//        cout << "c: " << _config.at(i) << "  v: " << _values->at(i) << endl;
         sum += pow(_config.at(i) - _values->at(i), 2.0);
     }
-    return sum;
+    return sqrt(sum);
 }
 
 int NodeTree::add_node(std::vector<double> _values, RRTNodePtr _parent) {
@@ -38,11 +41,11 @@ RRTNode* NodeTree::nearest_node(std::vector<double> _values) {
 
     RRTNode* best = &this->_nodes.at(0);
     double best_dist = std::numeric_limits<double>::max();
-    for(auto node : this->_nodes) {
-        double test_dist = best->dist_to(node.get_config());
+    for(uint i = 1; i < _nodes.size(); i++) {
+        double test_dist = best->dist_to(_nodes.at(i).get_config());
         std::cout << "dist: " << test_dist << std::endl;
         if(best_dist > test_dist) {
-            best = &node;
+            best = &_nodes.at(i);
             best_dist = test_dist;
         }
     }
