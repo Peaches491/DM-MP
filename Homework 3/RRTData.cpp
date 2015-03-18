@@ -13,7 +13,7 @@ using namespace std;
 
 int RRTNode::_currentID = 0;
 
-double RRTNode::dist_to(std::vector<double>* _values, RRTConfig* cfg) {
+double RRTNode::dist_to(vector<double>* _values, RRTConfig* cfg) {
     double sum = 0;
     for(uint i = 0; i < _config.size(); i++) {
         if(cfg->ident.at(i)) {
@@ -26,25 +26,25 @@ double RRTNode::dist_to(std::vector<double>* _values, RRTConfig* cfg) {
     return sqrt(sum);
 }
 
-void RRTNode::print(ostream& sout) {
+void RRTNode::print() {
     if(_parent_id != 0){
-        sout << _parent_id << "<-" << _id << ": ";
+        cout << _parent_id << "<-" << _id << ": ";
     } else {
-        sout << _id << ": ";
+        cout << _id << ": ";
     }
     for(auto j : this->_config) {
-        sout << j << ", ";
+        cout << j << ", ";
     }
-    sout << endl;
+    cout << endl;
 }
 
-int NodeTree::add_node(std::vector<double> _values, int _parent_id) {
+int NodeTree::add_node(vector<double> _values, int _parent_id) {
     RRTNode new_node = RRTNode(_values, _parent_id);
     _nodes.push_back(new_node);
     return new_node._id;
 }
 
-int NodeTree::add_node(std::vector<double> _values) {
+int NodeTree::add_node(vector<double> _values) {
     return add_node(_values, 0);
 }
 
@@ -52,7 +52,7 @@ bool NodeTree::delete_node(int _node) {
     return false;
 }
 
-int NodeTree::nearest_node(std::vector<double> _values) {
+int NodeTree::nearest_node(vector<double> _values) {
     RRTNode* best = &_nodes.at(0);
     double best_dist = _nodes.at(0).dist_to(&_values, cfg);
 
@@ -66,8 +66,8 @@ int NodeTree::nearest_node(std::vector<double> _values) {
     return best->_id;
 }
 
-void NodeTree::print_tree(std::ostream& sout, int depth) {
+void NodeTree::print_tree(int depth) {
     for(auto node : _nodes){
-        node.print(sout);
+        node.print();
     }
 }

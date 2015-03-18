@@ -15,17 +15,19 @@ public:
     std::vector<double> j_min, j_max;
     std::vector<int> ident;
     ulong c_dim = 0;
+    int max_iter = 1000;
     std::ostream &sout;
     OpenRAVE::EnvironmentBasePtr env;
     OpenRAVE::RobotBasePtr robot;
 
     RRTConfig(std::vector<double> j_min, std::vector<double> j_max,
-              std::vector<int> ident, ulong dim, std::ostream& sout,
+              std::vector<int> ident, ulong dim, int max_iter, std::ostream& sout,
               OpenRAVE::EnvironmentBasePtr env, OpenRAVE::RobotBasePtr robot)
             : j_min(j_min)
             , j_max(j_max)
             , ident(ident)
             , c_dim(dim)
+            , max_iter(max_iter)
             , sout(sout)
             , env(env)
             , robot(robot)

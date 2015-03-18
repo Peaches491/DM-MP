@@ -15,8 +15,10 @@ class RRT {
 private:
     std::ostream& sout;
     std::default_random_engine _rand = std::default_random_engine(time(NULL));
+    std::uniform_real_distribution<double> goal_rand = std::uniform_real_distribution<double>(0.0, 1.0);
+    std::vector<double> goal_config;
 
-    std::vector<double> sample(bool non_collide = true);
+    std::pair<bool, std::vector<double> > sample(double goal_freq, bool non_collide = true);
     double dRand(double fMin, double fMax) {
         std::uniform_real_distribution<double> unif(fMin, fMax);
         return unif(_rand);
@@ -30,6 +32,7 @@ public:
     std::vector<RRTNode*> do_search(std::vector<double> start_config, std::vector<double> _goal_cfg,
         double step_size, double goal_freq);
     bool collides(std::vector<double> _joints);
+    std::pair<bool, RRTNode> connect(int nn_idx, std::vector<double> smp, double step);
 
     bool is_ident(int i) {
         return cfg->ident.at(i) == 1;
