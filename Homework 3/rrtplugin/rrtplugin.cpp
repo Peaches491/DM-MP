@@ -13,15 +13,25 @@
 #include <boost/assign/list_of.hpp>
 
 #include "../RRT.h"
+#include <signal.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
 
 using namespace OpenRAVE;
 using namespace std;
+
+void my_handler(int s){
+    printf("Caught signal %d\n",s);
+    exit(1);
+}
 
 class RRTModule : public ModuleBase {
 private:
     EnvironmentBasePtr env;
     std::vector<RobotBasePtr> robots;
     RobotBasePtr robot;
+
 public:
     RRTModule(EnvironmentBasePtr penv, std::istream &ss) : ModuleBase(penv) {
 
@@ -65,9 +75,11 @@ public:
                 switch(arg_vec.at(i)[1]) {
                     case 'n':
                         dimension = atoi(arg_vec.at(++i).c_str());
+                        break;
                     case 's':
                         for(int j_idx = 0; j_idx < dimension; j_idx++){
                             i++;
+                            cout << "Pushing Start: " << arg_vec.at(i).c_str() << endl;
                             start_config.push_back(atof(arg_vec.at(i).c_str()));
                         }
                         break;
@@ -124,14 +136,23 @@ public:
         cout << "Goal sampling frequency: " << goal_freq << endl;
 
         std::vector<int> joint_idxs;
-        joint_idxs.push_back(15);
-        joint_idxs.push_back(16);
-        joint_idxs.push_back(17);
-        joint_idxs.push_back(18);
-        joint_idxs.push_back(19);
-        joint_idxs.push_back(20);
-        joint_idxs.push_back(21);
+        cout << "Joint Indices: ";
+        for(auto idx : robot->GetActiveDOFIndices()) {
+            cout << idx << ", ";
+            joint_idxs.push_back(idx);
+        }
+        cout << endl;
         robot->GetDOFLimits(j_min, j_max, joint_idxs);
+
+//        cout << endl;
+//        for(uint i = 0; i < dimension; i++){
+//            cout << "Start: " << start_config.at(i) << endl;
+//            cout << "Joint Idx: " << joint_idxs.at(i) << endl;
+//            cout << "Joint Name: " << robot->GetJointFromDOFIndex(joint_idxs.at(i))->GetName() << endl;
+//            cout << "Min: " << j_min.at(i) << endl;
+//            cout << "Max: " << j_max.at(i) << endl;
+//            cout << endl;
+//        }
 
         assert(dimension > 0);
         assert(j_min.size() == (uint)dimension);
@@ -140,14 +161,34 @@ public:
 
         for(int i = 0; i < dimension; i++) {
             if(ident.at(i)) {
-                j_min.at(i) = fmod(j_min.at(i), M_PI);
-                j_max.at(i) = fmod(j_max.at(i), M_PI);
+                j_min.at(i) = -2*M_PI;
+                j_max.at(i) =  2*M_PI;
             }
         }
 
+
+        struct sigaction sigIntHandler;
+
+        sigIntHandler.sa_handler = my_handler;
+        sigemptyset(&sigIntHandler.sa_mask);
+        sigIntHandler.sa_flags = 0;
+
+        sigaction(SIGINT, &sigIntHandler, NULL);
+
+
         RRT* rrt = new RRT(new RRTConfig(j_min, j_max, ident, dimension, max_iter, cout, env, robot));
 
-        rrt->do_search(start_config, goal_config, step_size, goal_freq);
+        vector<RRTNode> path = rrt->do_search(start_config, goal_config, step_size, goal_freq);
+
+//        for (auto node : path) {
+//            cout << node._id << ": ";
+//            for(auto joint_val : node.get_config()) {
+//                cout << joint_val << ", ";
+//            }
+//            cout << endl;
+//        }
+
+//        env->plot3()
 
         return true;
     }

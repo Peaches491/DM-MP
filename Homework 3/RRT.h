@@ -16,6 +16,7 @@ private:
     std::ostream& sout;
     std::default_random_engine _rand = std::default_random_engine(time(NULL));
     std::uniform_real_distribution<double> goal_rand = std::uniform_real_distribution<double>(0.0, 1.0);
+    std::vector<double> start_config;
     std::vector<double> goal_config;
 
     std::pair<bool, std::vector<double> > sample(double goal_freq, bool non_collide = true);
@@ -29,10 +30,10 @@ public:
     NodeTree root;
 
     RRT(RRTConfig* cfg);
-    std::vector<RRTNode*> do_search(std::vector<double> start_config, std::vector<double> _goal_cfg,
+    std::vector<RRTNode> do_search(std::vector<double> start_config, std::vector<double> _goal_cfg,
         double step_size, double goal_freq);
     bool collides(std::vector<double> _joints);
-    std::pair<bool, RRTNode> connect(int nn_idx, std::vector<double> smp, double step);
+    std::pair<bool, RRTNode> connect(int nn_id, std::vector<double> smp, double step_size);
 
     bool is_ident(int i) {
         return cfg->ident.at(i) == 1;

@@ -1,7 +1,3 @@
-//
-// Created by peaches on 3/14/15.
-//
-
 #ifndef _DM_MP_RRTDATA_H_
 #define _DM_MP_RRTDATA_H_
 
