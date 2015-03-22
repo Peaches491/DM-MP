@@ -59,7 +59,8 @@ vector<RRTNode> RRT::do_search(vector<double> _start_cfg, vector<double> _goal_c
 
         // Update the last added node
         latest_id = connect_result.second._id;
-        cout << "Iter: " << iter << " Nodes: " << root.get_nodes().size() << " Goal? " << smp_pair.first << " Connected? " << connect_result.first << endl;
+        cout << "Iter: " << iter << " Nodes: " << root.get_nodes().size()
+             << " Goal? " << smp_pair.first << " Connected? " << connect_result.first << endl;
 
 //        std::vector< double > v;
 //        cfg->robot->SetActiveDOFValues(connect_result.second.get_config());
@@ -68,7 +69,6 @@ vector<RRTNode> RRT::do_search(vector<double> _start_cfg, vector<double> _goal_c
 //        while(!cfg->robot->GetController()->IsDone()){
 //            usleep(1000);
 //        }
-
 
 //        cfg->robot->SetActiveDOFValues(connect_result.second.get_config());
 //        OpenRAVE::RobotBase::ManipulatorPtr manip = cfg->robot->GetActiveManipulator();
@@ -135,8 +135,6 @@ vector<RRTNode> RRT::do_search(vector<double> _start_cfg, vector<double> _goal_c
             cout << joint_val << ", ";
         }
         cout << endl;
-
-        usleep(1000 * 100);
     }
     return path_fwd;
 }
@@ -207,12 +205,10 @@ pair<bool, RRTNode> RRT::connect(int nn_id, vector<double> smp, double step_size
     for (steps = 1; steps < step_count; steps++) {
         current_step.clear();
 
-//        cout << "  Step " << steps << ": " ;
         for (int i = 0; i < cfg->c_dim; i++) {
             current_step.push_back(start.at(i) + step_vec.at(i)*steps);
-//            cout << current_step.back() << ", ";
         }
-//        cout << endl;
+
         if (!collides(current_step)) {
             int latest_id = root.add_node(current_step, root.get_nodes().at(latest)._id);
 
@@ -227,7 +223,6 @@ pair<bool, RRTNode> RRT::connect(int nn_id, vector<double> smp, double step_size
             break;
         }
     }
-
 
     cout << "  Connecting steps: " << steps << " / " << step_count << endl;
 
@@ -255,7 +250,6 @@ bool RRT::collides(vector<double> _joints) {
 
     // TODO: DELETE THIS
 //    return false;
-
     cfg->robot->SetActiveDOFValues(_joints);
     return cfg->env->CheckCollision(cfg->robot) || cfg->robot->CheckSelfCollision();
 }

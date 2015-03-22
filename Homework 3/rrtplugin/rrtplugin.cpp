@@ -181,26 +181,24 @@ public:
         RRT* rrt = new RRT(new RRTConfig(j_min, j_max, ident, dimension, max_iter, cout, env, robot));
 
 
-        std::vector< double > v;
-        robot->SetActiveDOFValues(start_config);
-        robot->GetDOFValues(v);
-        robot->GetController()->SetDesired(v);
-        while(!robot->GetController()->IsDone()){
-            usleep(1000);
-        }
-        std::cout << "Press ENTER to continue...";
-        std::cin.ignore( std::numeric_limits<std::streamsize>::max(), '\n' );
-
-        robot->SetActiveDOFValues(goal_config);
-        robot->GetDOFValues(v);
-        robot->GetController()->SetDesired(v);
-        while(!robot->GetController()->IsDone()){
-            usleep(1000);
-        }
-        std::cout << "Press ENTER to continue...";
-        std::cin.ignore( std::numeric_limits<std::streamsize>::max(), '\n' );
-
-
+//        std::vector< double > v;
+//        robot->SetActiveDOFValues(start_config);
+//        robot->GetDOFValues(v);
+//        robot->GetController()->SetDesired(v);
+//        while(!robot->GetController()->IsDone()){
+//            usleep(1000);
+//        }
+//        std::cout << "Press ENTER to continue...";
+//        std::cin.ignore( std::numeric_limits<std::streamsize>::max(), '\n' );
+//
+//        robot->SetActiveDOFValues(goal_config);
+//        robot->GetDOFValues(v);
+//        robot->GetController()->SetDesired(v);
+//        while(!robot->GetController()->IsDone()){
+//            usleep(1000);
+//        }
+//        std::cout << "Press ENTER to continue...";
+//        std::cin.ignore( std::numeric_limits<std::streamsize>::max(), '\n' );
 
         vector<RRTNode> path = rrt->do_search(start_config, goal_config, step_size, goal_freq);
 

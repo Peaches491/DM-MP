@@ -56,16 +56,16 @@ if __name__ == "__main__":
     robot.SetActiveDOFs([robot.GetJoint(name).GetDOFIndex() for name in jointnames])
 
     # set start config
-    startconfig = [0.449, -0.201, -0.8, 0, 0, -0.8, 0]
-    # startconfig = [-0.15, 0.075, -1.008, 0, 0, 0, 0]
+    # startconfig = [0.449, -0.201, -0.8, 0, 0, -0.8, 0]
+    startconfig = [-0.15, 0.075, -1.008, 0, 0, 0, 0]
     robot.SetActiveDOFValues(startconfig)
     robot.GetController().SetDesired(robot.GetDOFValues())
     waitrobot(robot)
 
     tmp = False
 
-    # with env:
-    for i in range(1):
+    with env:
+    # for i in range(1):
         jointnames =['l_shoulder_pan_joint','l_shoulder_lift_joint','l_elbow_flex_joint','l_upper_arm_roll_joint','l_forearm_roll_joint','l_wrist_flex_joint','l_wrist_roll_joint']
         robot.SetActiveDOFs([robot.GetJoint(name).GetDOFIndex() for name in jointnames])
 
@@ -83,8 +83,8 @@ if __name__ == "__main__":
         cmd += '-s ' + str([float(x) for x in startconfig]).translate(None, "[],") + ' '
         cmd += '-g ' + str(goalconfig).translate(None, "[],") + ' '
         cmd += '-d ' + str(0.05) + ' '
-        # cmd += '-f ' + str(0.25) + ' '
-        cmd += '-f ' + str(1.00) + ' '
+        cmd += '-f ' + str(0.05) + ' '
+        # cmd += '-f ' + str(1.00) + ' '
         cmd += '-i ' + str([int(robot.GetJointFromDOFIndex(x).IsCircular(0)) for x in robot.GetActiveDOFIndices()]).translate(None, "[],") + ' '
 
         print "Sending command"
