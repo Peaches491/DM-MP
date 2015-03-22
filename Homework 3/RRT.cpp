@@ -70,12 +70,14 @@ vector<RRTNode> RRT::do_search(vector<double> _start_cfg, vector<double> _goal_c
 //        }
 
 
-        OpenRAVE::RobotBase::ManipulatorPtr manip = cfg->robot->GetActiveManipulator();
-        OpenRAVE::RaveVector<OpenRAVE::dReal> trans = manip->GetEndEffectorTransform().trans;
-        points.push_back(trans.x);
-        points.push_back(trans.y);
-        points.push_back(trans.z);
-        if(iter%20 == 0){
+//        cfg->robot->SetActiveDOFValues(connect_result.second.get_config());
+//        OpenRAVE::RobotBase::ManipulatorPtr manip = cfg->robot->GetActiveManipulator();
+//        OpenRAVE::RaveVector<OpenRAVE::dReal> trans = manip->GetEndEffectorTransform().trans;
+//        points.push_back(trans.x);
+//        points.push_back(trans.y);
+//        points.push_back(trans.z);
+        if(iter%20 == 0 || false){
+            handles.clear();
             handles.push_back(cfg->env->plot3(&points[0], points.size()/3, sizeof(float)*3, 2.0));
         }
 
@@ -127,12 +129,14 @@ vector<RRTNode> RRT::do_search(vector<double> _start_cfg, vector<double> _goal_c
     // Reverse the path. Now start --> goal.
     vector<RRTNode> path_fwd;
     for(ulong i = path.size(); i-- > 0; i) {
-        path.push_back(path.at(i));
+        path_fwd.push_back(path.at(i));
         cout << i << " : " << path.at(i)._id << ": ";
         for(auto joint_val : path.at(i).get_config()) {
             cout << joint_val << ", ";
         }
         cout << endl;
+
+        usleep(1000 * 100);
     }
     return path_fwd;
 }
@@ -211,6 +215,13 @@ pair<bool, RRTNode> RRT::connect(int nn_id, vector<double> smp, double step_size
 //        cout << endl;
         if (!collides(current_step)) {
             int latest_id = root.add_node(current_step, root.get_nodes().at(latest)._id);
+
+            cfg->robot->SetActiveDOFValues(current_step);
+            OpenRAVE::RobotBase::ManipulatorPtr manip = cfg->robot->GetActiveManipulator();
+            OpenRAVE::RaveVector<OpenRAVE::dReal> trans = manip->GetEndEffectorTransform().trans;
+            points.push_back(trans.x);
+            points.push_back(trans.y);
+            points.push_back(trans.z);
             latest = root.get_nodes().at(latest_id)._id;
         } else {
             break;
@@ -222,7 +233,7 @@ pair<bool, RRTNode> RRT::connect(int nn_id, vector<double> smp, double step_size
 
     // Last step_size should never collide
     if (steps == step_count) {
-        int latest_id = root.add_node(current_step, root.get_nodes().at(latest)._id);
+        int latest_id = root.add_node(smp, root.get_nodes().at(latest)._id);
         latest = root.get_nodes().at(latest_id)._id;
         return pair<bool, RRTNode>(true, root.get_nodes().at(latest));
     } else {
@@ -241,6 +252,10 @@ pair<bool, RRTNode> RRT::connect(int nn_id, vector<double> smp, double step_size
 *  @return A boolean, TRUE if given configuration collides.
 */
 bool RRT::collides(vector<double> _joints) {
+
+    // TODO: DELETE THIS
+//    return false;
+
     cfg->robot->SetActiveDOFValues(_joints);
-    return cfg->env->CheckCollision(cfg->robot);
+    return cfg->env->CheckCollision(cfg->robot) || cfg->robot->CheckSelfCollision();
 }
