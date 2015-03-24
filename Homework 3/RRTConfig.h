@@ -15,6 +15,7 @@ public:
     std::ostream &sout;
     OpenRAVE::EnvironmentBasePtr env;
     OpenRAVE::RobotBasePtr robot;
+    std::vector<double> weights;
 
     RRTConfig(std::vector<double> j_min, std::vector<double> j_max,
               std::vector<int> ident, ulong dim, int max_iter, std::ostream& sout,
@@ -27,7 +28,9 @@ public:
             , sout(sout)
             , env(env)
             , robot(robot)
-    {};
+    {
+        robot->GetActiveDOFWeights(weights);
+    };
 };
 
 #endif //_DM_MP_RRTCONFIG_H_

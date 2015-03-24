@@ -8,6 +8,7 @@
 using namespace std;
 
 vector<OpenRAVE::GraphHandlePtr> handles;
+OpenRAVE::GraphHandlePtr goal_handle;
 vector<float> points;
 
 /*
@@ -56,13 +57,19 @@ vector<RRTNode> RRT::do_search(vector<double> _start_cfg, vector<double> _goal_c
         // Find the ID of the nearest node to the sample.
         int nn = root.nearest_node(smp);
 
+        if(smp_pair.first) {
+            cfg->robot->SetActiveDOFValues(root.get_nodes()->at(nn).get_config());
+            OpenRAVE::RobotBase::ManipulatorPtr manip = cfg->robot->GetActiveManipulator();
+            OpenRAVE::RaveVector<OpenRAVE::dReal> trans = manip->GetEndEffectorTransform().trans;
+            vector<float> pt = {(float)trans.x, (float)trans.y, (float)trans.z};
+            goal_handle = cfg->env->plot3( &pt[0], 1, sizeof(float)*3, 8.0, OpenRAVE::RaveVector<float>(0.5,1,0.5,1) );
+        }
+
         // Run RRT-Connect, trying to connect the tree to this new sample
         pair<bool, RRTNode> connect_result = connect(nn, smp, step_size);
 
         // Update the last added node
         latest_id = connect_result.second._id;
-        cout << "Iter: " << iter << " Nodes: " << root.get_nodes().size()
-             << " Goal? " << smp_pair.first << " Connected? " << connect_result.first << endl;
 
 //        std::vector< double > v;
 //        cfg->robot->SetActiveDOFValues(connect_result.second.get_config());
@@ -72,15 +79,17 @@ vector<RRTNode> RRT::do_search(vector<double> _start_cfg, vector<double> _goal_c
 //            usleep(1000);
 //        }
 
-//        cfg->robot->SetActiveDOFValues(connect_result.second.get_config());
-//        OpenRAVE::RobotBase::ManipulatorPtr manip = cfg->robot->GetActiveManipulator();
-//        OpenRAVE::RaveVector<OpenRAVE::dReal> trans = manip->GetEndEffectorTransform().trans;
-//        points.push_back(trans.x);
-//        points.push_back(trans.y);
-//        points.push_back(trans.z);
+        cfg->robot->SetActiveDOFValues(connect_result.second.get_config());
+        OpenRAVE::RobotBase::ManipulatorPtr manip = cfg->robot->GetActiveManipulator();
+        OpenRAVE::RaveVector<OpenRAVE::dReal> trans = manip->GetEndEffectorTransform().trans;
+        points.push_back(trans.x);
+        points.push_back(trans.y);
+        points.push_back(trans.z);
         if(iter%20 == 0 || false){
-            handles.clear();
+            cout << "Iter: " << iter << " Nodes: " << root.get_nodes()->size()
+                    << " Goal? " << smp_pair.first << " Connected? " << connect_result.first << endl;
             handles.push_back(cfg->env->plot3(&points[0], points.size()/3, sizeof(float)*3, 2.0));
+            points.clear();
         }
 
 
@@ -101,7 +110,7 @@ vector<RRTNode> RRT::do_search(vector<double> _start_cfg, vector<double> _goal_c
         // Build the path, in reverse at first. Goal --> start
         while (true) {
 //            cout << latest_id->_id << ": ";
-            path.push_back(root.get_nodes().at(latest_id));
+            path.push_back(root.get_nodes()->at(latest_id));
 //            for(auto joint_val : latest_id->get_config()) {
 //                cout << joint_val << ", ";
 //            }
@@ -109,13 +118,13 @@ vector<RRTNode> RRT::do_search(vector<double> _start_cfg, vector<double> _goal_c
             if (latest_id == 0) {
                 break;
             }
-            latest_id = root.get_nodes().at(root.get_nodes().at(latest_id)._parent_id)._id;
+            latest_id = root.get_nodes()->at(root.get_nodes()->at(latest_id)._parent_id)._id;
         }
     }
     cout << endl;
 
-    cout << "Start " << root.get_nodes().at(0)._id << ": ";
-    for(auto node : root.get_nodes().at(0).get_config()){
+    cout << "Start " << root.get_nodes()->at(0)._id << ": ";
+    for(auto node : root.get_nodes()->at(0).get_config()){
         cout << node << ", ";
     }
     cout << endl;
@@ -190,20 +199,18 @@ std::pair<bool, vector<double> > RRT::sample(double goal_freq, bool non_collide)
 */
 pair<bool, RRTNode> RRT::connect(int nn_id, vector<double> smp, double step_size) {
 
-    vector<double> start = root.get_nodes().at(nn_id).get_config();
-    int latest = root.get_nodes().at(nn_id)._id;
+    vector<double> start = root.get_nodes()->at(nn_id).get_config();
+    int latest = root.get_nodes()->at(nn_id)._id;
 
-    double axis_dist = step_size / root.get_nodes().at(latest).dist_to(&smp, cfg);
+    double axis_dist = step_size / root.get_nodes()->at(latest).dist_to(&smp, cfg);
     int step_count = (int) floor(1.0 / axis_dist);
 
     vector<double> step_vec;
     for (uint i = 0; i < cfg->c_dim; i++) {
-        step_vec.push_back((smp.at(i) - root.get_nodes().at(latest).get_config().at(i)) * axis_dist);
+        step_vec.push_back((smp.at(i) - root.get_nodes()->at(latest).get_joint(i)) * axis_dist);
     }
 
-    cout << "CONNECTING " << nn_id << " from " << root.get_nodes().size() << " with " << step_count << endl;
-
-    vector<double> current_step = root.get_nodes().at(nn_id).get_config();
+    vector<double> current_step = root.get_nodes()->at(nn_id).get_config();
 
     int steps;
     for (steps = 1; steps < step_count; steps++) {
@@ -214,13 +221,7 @@ pair<bool, RRTNode> RRT::connect(int nn_id, vector<double> smp, double step_size
         }
 
         if (!collides(current_step)) {
-            cout << "Adding " << steps << endl;
-            cout.flush();
-            for(auto val : current_step) {
-                cout << val << ", ";
-            }
-            cout << endl;
-            int latest_id = root.add_node(current_step, root.get_nodes().at(latest)._id);
+            int latest_id = root.add_node(current_step, root.get_nodes()->at(latest)._id);
 
             cfg->robot->SetActiveDOFValues(current_step);
             OpenRAVE::RobotBase::ManipulatorPtr manip = cfg->robot->GetActiveManipulator();
@@ -228,7 +229,7 @@ pair<bool, RRTNode> RRT::connect(int nn_id, vector<double> smp, double step_size
             points.push_back(trans.x);
             points.push_back(trans.y);
             points.push_back(trans.z);
-            latest = root.get_nodes().at(latest_id)._id;
+            latest = root.get_nodes()->at(latest_id)._id;
         } else {
             break;
         }
@@ -238,11 +239,11 @@ pair<bool, RRTNode> RRT::connect(int nn_id, vector<double> smp, double step_size
 
     // Last step_size should never collide
     if (steps == step_count) {
-        int latest_id = root.add_node(smp, root.get_nodes().at(latest)._id);
-        latest = root.get_nodes().at(latest_id)._id;
-        return pair<bool, RRTNode>(true, root.get_nodes().at(latest));
+        int latest_id = root.add_node(smp, root.get_nodes()->at(latest)._id);
+        latest = root.get_nodes()->at(latest_id)._id;
+        return pair<bool, RRTNode>(true, root.get_nodes()->at(latest));
     } else {
-        return pair<bool, RRTNode>(false, root.get_nodes().at(latest));
+        return pair<bool, RRTNode>(false, root.get_nodes()->at(latest));
     }
 
 }

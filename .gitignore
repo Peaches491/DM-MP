@@ -48,8 +48,5 @@ build/
 
 Homework\ 3/kdtree/kdtree
 
+CMakeFiles/
 CMakeCache.txt
-CMakeFiles
-Makefile
-cmake_install.cmake
-install_manifest.txt

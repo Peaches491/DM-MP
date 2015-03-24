@@ -11,4 +11,3 @@ uninstall:
 
 clean:
 	-cd build && $(MAKE) clean
-

@@ -3,6 +3,7 @@
 #HW3 for RBE 595/CS 525 Motion Planning
 import time
 import openravepy
+from openravepy import *
 
 #### YOUR IMPORTS GO HERE ####
 import multiprocessing, math, time
@@ -76,14 +77,22 @@ if __name__ == "__main__":
         # from the current configuration of the left arm to
         # the goalconfig
 
+        lmodel = databases.linkstatistics.LinkStatisticsModel(robot)
+        if not lmodel.load():
+            lmodel.autogenerate()
+
+        lmodel.setRobotResolutions(0.01) # set resolution given smallest object is 0.01m
+        lmodel.setRobotWeights() # set the weights for planning
+
+        print("Joint Weights: ", robot.GetActiveDOFWeights())
 
         cmd = 'RunRRT '
         cmd += '-n ' + str(len(goalconfig)) + ' '
         # cmd += '-s ' + str([float(x) for x in robot.GetActiveDOFValues()]).translate(None, "[],") + ' '
         cmd += '-s ' + str([float(x) for x in startconfig]).translate(None, "[],") + ' '
         cmd += '-g ' + str(goalconfig).translate(None, "[],") + ' '
-        cmd += '-d ' + str(0.05) + ' '
-        cmd += '-f ' + str(0.05) + ' '
+        cmd += '-d ' + str(0.1) + ' '
+        cmd += '-f ' + str(0.15) + ' '
         # cmd += '-f ' + str(1.00) + ' '
         cmd += '-i ' + str([int(robot.GetJointFromDOFIndex(x).IsCircular(0)) for x in robot.GetActiveDOFIndices()]).translate(None, "[],") + ' '
 

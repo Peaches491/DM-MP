@@ -19,15 +19,18 @@ int RRTNode::_currentID = 0;
 *  @param cfg Pointer to the RRTConfig object describing this RRT.
 *  @return A double representing the Euclidian distance.
 */
-double RRTNode::dist_to(vector<double>* _values, RRTConfig* cfg) {
+double RRTNode::dist_to(std::vector<double>* _values, RRTConfig* cfg, bool use_weights) {
     double sum = 0;
     for(uint i = 0; i < _config.size(); i++) {
-        if(cfg->ident.at(i)) {
+//        if(cfg->ident.at(i)) {
 //            sum += pow(fmod((_config.at(i) - _values->at(i)), M_PI), 2.0);
-            sum += pow(_config.at(i) - _values->at(i), 2.0);
-        } else {
-            sum += pow(_config.at(i) - _values->at(i), 2.0);
-        }
+//            sum += pow(_config.at(i) - _values->at(i), 2.0);
+//        } else {
+//            sum += pow(_config.at(i) - _values->at(i), 2.0);
+//        }
+        double diff = _config.at(i) - _values->at(i);
+        if(use_weights) diff *= cfg->weights[i];
+        sum += diff*diff;
     }
     return sqrt(sum);
 }
@@ -103,10 +106,10 @@ bool NodeTree::delete_node(int _node) {
 */
 int NodeTree::nearest_node(vector<double> _values) {
     RRTNode* best = &_nodes.at(0);
-    double best_dist = _nodes.at(0).dist_to(&_values, cfg);
+    double best_dist = _nodes.at(0).dist_to(&_values, cfg, true);
 
     for(uint i = 1; i < _nodes.size(); i++) {
-        double test_dist = _nodes.at(i).dist_to(&_values, cfg);
+        double test_dist = _nodes.at(i).dist_to(&_values, cfg, true);
         if(test_dist < best_dist) {
             best = &_nodes.at(i);
             best_dist = test_dist;
