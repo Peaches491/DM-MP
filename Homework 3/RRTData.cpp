@@ -59,6 +59,15 @@ void RRTNode::print() {
 int NodeTree::add_node(vector<double> _values, int _parent_id) {
     RRTNode new_node = RRTNode(_values, _parent_id);
     _nodes.push_back(new_node);
+//    cout << "Inserting " << _parent_id << "<-" << new_node._id << " ... ";
+//    cout.flush();
+//    cout << _values.size() << "  ";
+//    cout.flush();
+//    for(auto val : new_node.get_config()) {
+//        cout << val << ", ";
+//    }
+//    kd_tree.insert(triplet(new_node.get_config(), new_node._id));
+//    cout << "DONE." << endl;
     return new_node._id;
 }
 
@@ -70,7 +79,7 @@ int NodeTree::add_node(vector<double> _values, int _parent_id) {
 *  @return The ID of the newly constructed node
 */
 int NodeTree::add_node(vector<double> _values) {
-    return add_node(_values, NULL);
+    return add_node(_values, 0);
 }
 
 

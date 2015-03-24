@@ -41,3 +41,15 @@
 
 # Build directory
 Homework\ 3/rrtplugin/build/
+build/
+
+.kdev4/
+*.kdev4
+
+Homework\ 3/kdtree/kdtree
+
+CMakeCache.txt
+CMakeFiles
+Makefile
+cmake_install.cmake
+install_manifest.txt

@@ -17,7 +17,6 @@ public:
     void print();
 
     RRTNode(std::vector<double> _values, int _parent_id)
-//        : _parent(_parent)
         : _id(_currentID++)
     {
         this->_parent_id = _parent_id;
@@ -29,16 +28,15 @@ public:
 };
 
 
+
 class NodeTree {
 private:
+
     RRTConfig* cfg;
     std::vector<RRTNode> _nodes;
-//    std::unordered_map _node_map;
 
 public:
-//    typedef pair<const Key, T> value_type;
-
-    NodeTree(RRTConfig* cfg) : cfg(cfg){};
+    NodeTree(RRTConfig* cfg) : cfg(cfg){    };
 
     int add_node(std::vector<double> _values, int _parent);
     int add_node(std::vector<double> _values);
@@ -48,6 +46,7 @@ public:
     std::vector<RRTNode> get_nodes() {
         return _nodes;
     }
+
 };
 
 #endif //_DM_MP_RRTDATA_H_

@@ -1,6 +1,8 @@
 #include <random>
 #include <unistd.h>
+
 #include "RRT.h"
+
 #include <openrave/viewer.h>
 
 using namespace std;
@@ -128,7 +130,7 @@ vector<RRTNode> RRT::do_search(vector<double> _start_cfg, vector<double> _goal_c
 
     // Reverse the path. Now start --> goal.
     vector<RRTNode> path_fwd;
-    for(ulong i = path.size(); i-- > 0; i) {
+    for(long i = path.size(); i-- > 0;) {
         path_fwd.push_back(path.at(i));
         cout << i << " : " << path.at(i)._id << ": ";
         for(auto joint_val : path.at(i).get_config()) {
@@ -187,7 +189,7 @@ std::pair<bool, vector<double> > RRT::sample(double goal_freq, bool non_collide)
 *       vector (second) contains the sampled point.
 */
 pair<bool, RRTNode> RRT::connect(int nn_id, vector<double> smp, double step_size) {
-//    cout << "CONNECTING " << nn_id << " from " << root.get_nodes().size() << endl;
+
     vector<double> start = root.get_nodes().at(nn_id).get_config();
     int latest = root.get_nodes().at(nn_id)._id;
 
@@ -195,9 +197,11 @@ pair<bool, RRTNode> RRT::connect(int nn_id, vector<double> smp, double step_size
     int step_count = (int) floor(1.0 / axis_dist);
 
     vector<double> step_vec;
-    for (int i = 0; i < cfg->c_dim; i++) {
+    for (uint i = 0; i < cfg->c_dim; i++) {
         step_vec.push_back((smp.at(i) - root.get_nodes().at(latest).get_config().at(i)) * axis_dist);
     }
+
+    cout << "CONNECTING " << nn_id << " from " << root.get_nodes().size() << " with " << step_count << endl;
 
     vector<double> current_step = root.get_nodes().at(nn_id).get_config();
 
@@ -205,11 +209,17 @@ pair<bool, RRTNode> RRT::connect(int nn_id, vector<double> smp, double step_size
     for (steps = 1; steps < step_count; steps++) {
         current_step.clear();
 
-        for (int i = 0; i < cfg->c_dim; i++) {
+        for (uint i = 0; i < cfg->c_dim; i++) {
             current_step.push_back(start.at(i) + step_vec.at(i)*steps);
         }
 
         if (!collides(current_step)) {
+            cout << "Adding " << steps << endl;
+            cout.flush();
+            for(auto val : current_step) {
+                cout << val << ", ";
+            }
+            cout << endl;
             int latest_id = root.add_node(current_step, root.get_nodes().at(latest)._id);
 
             cfg->robot->SetActiveDOFValues(current_step);
