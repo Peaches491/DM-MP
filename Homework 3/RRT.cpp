@@ -58,7 +58,7 @@ pair<vector<RRTNode>, vector<RRTNode> > RRT::do_search(vector<double> _start_cfg
         int nn = root.nearest_node(smp);
 
         if(smp_pair.first) {
-            cfg->robot->SetActiveDOFValues(root.get_nodes()->at(nn).get_config());
+            cfg->robot->SetActiveDOFValues(root.get_nodes()->at(root.nearest_node(goal_config)).get_config());
             OpenRAVE::RobotBase::ManipulatorPtr manip = cfg->robot->GetActiveManipulator();
             OpenRAVE::RaveVector<OpenRAVE::dReal> trans = manip->GetEndEffectorTransform().trans;
             vector<float> pt = {(float)trans.x, (float)trans.y, (float)trans.z};
@@ -71,21 +71,13 @@ pair<vector<RRTNode>, vector<RRTNode> > RRT::do_search(vector<double> _start_cfg
         // Update the last added node
         latest_id = connect_result.second._id;
 
-//        std::vector< double > v;
-//        cfg->robot->SetActiveDOFValues(connect_result.second.get_config());
-//        cfg->robot->GetDOFValues(v);
-//        cfg->robot->GetController()->SetDesired(v);
-//        while(!cfg->robot->GetController()->IsDone()){
-//            usleep(1000);
-//        }
-
         cfg->robot->SetActiveDOFValues(connect_result.second.get_config());
         OpenRAVE::RobotBase::ManipulatorPtr manip = cfg->robot->GetActiveManipulator();
         OpenRAVE::RaveVector<OpenRAVE::dReal> trans = manip->GetEndEffectorTransform().trans;
         points.push_back(trans.x);
         points.push_back(trans.y);
         points.push_back(trans.z);
-        if(iter%20 == 0 || false){
+        if(iter%50 == 0 || false){
             cout << "Iter: " << iter << " Nodes: " << root.get_nodes()->size()
                     << " Goal? " << smp_pair.first << " Connected? " << connect_result.first << endl;
             handles.push_back(cfg->env->plot3(&points[0], points.size()/3, sizeof(float)*3, 2.0));
@@ -232,7 +224,7 @@ pair<bool, RRTNode> RRT::connect(int nn_id, vector<double> smp, double step_size
         }
     }
 
-    cout << "  Connecting steps: " << steps << " / " << step_count << endl;
+//    cout << "  Connecting steps: " << steps << " / " << step_count << endl;
 
     // Last step_size should never collide
     if (steps == step_count) {

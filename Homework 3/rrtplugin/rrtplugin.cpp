@@ -218,6 +218,13 @@ public:
 //            }
 //            usleep(1000 * 100);
 //        }
+
+        if(path.first.size() > 2){
+            sout << "success";
+        } else {
+            sout << "failure";
+        }
+
         return true;
     }
 };
