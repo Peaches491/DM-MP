@@ -30,7 +30,7 @@ public:
     NodeTree root;
 
     RRT(RRTConfig* cfg);
-    std::vector<RRTNode> do_search(std::vector<double> start_config, std::vector<double> _goal_cfg,
+    std::pair<std::vector<RRTNode>, std::vector<RRTNode> > do_search(std::vector<double> start_config, std::vector<double> _goal_cfg,
         double step_size, double goal_freq);
     bool collides(std::vector<double> _joints);
     std::pair<bool, RRTNode> connect(int nn_id, std::vector<double> smp, double step_size);

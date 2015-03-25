@@ -179,37 +179,16 @@ public:
         robot->SetActiveManipulator(robot->GetManipulators().at(robot->GetManipulators().size()-1));
 
         RRT* rrt = new RRT(new RRTConfig(j_min, j_max, ident, dimension, max_iter, cout, env, robot));
-
-
-//        std::vector< double > v;
-//        robot->SetActiveDOFValues(start_config);
-//        robot->GetDOFValues(v);
-//        robot->GetController()->SetDesired(v);
-//        while(!robot->GetController()->IsDone()){
-//            usleep(1000);
-//        }
-//        std::cout << "Press ENTER to continue...";
-//        std::cin.ignore( std::numeric_limits<std::streamsize>::max(), '\n' );
-//
-//        robot->SetActiveDOFValues(goal_config);
-//        robot->GetDOFValues(v);
-//        robot->GetController()->SetDesired(v);
-//        while(!robot->GetController()->IsDone()){
-//            usleep(1000);
-//        }
-//        std::cout << "Press ENTER to continue...";
-//        std::cin.ignore( std::numeric_limits<std::streamsize>::max(), '\n' );
-
-        vector<RRTNode> path = rrt->do_search(start_config, goal_config, step_size, goal_freq);
+        pair<vector<RRTNode>, vector<RRTNode> > path = rrt->do_search(start_config, goal_config, step_size, goal_freq);
 
         vector<OpenRAVE::GraphHandlePtr> handles;
         vector<float> points;
-        for (auto node : path) {
-            cout << node._id << ": ";
-            for(auto joint_val : node.get_config()) {
-                cout << joint_val << ", ";
-            }
-            cout << endl;
+        for (auto node : path.first) {
+//            cout << node._id << ": ";
+//            for(auto joint_val : node.get_config()) {
+//                cout << joint_val << ", ";
+//            }
+//            cout << endl;
 
             robot->SetActiveDOFValues(node.get_config());
             OpenRAVE::RobotBase::ManipulatorPtr manip = robot->GetActiveManipulator();
@@ -219,25 +198,26 @@ public:
             points.push_back(trans.z);
         }
 
-        handles.push_back(env->plot3(&points[0], points.size()/3, sizeof(float)*3, 2.0));
+        handles.push_back(env->plot3(&points[0], (int)(points.size()/3), sizeof(float)*3, 3.0, OpenRAVE::RaveVector<double>({1.0, 0.3, 0.3, 1})));
 
-        std::cout << "Press ENTER to continue...";
-        while(std::cin.ignore( std::numeric_limits<std::streamsize>::max(), '\n' )){
-            for (auto node : path) {
-                std::vector<double> v;
-                robot->SetActiveDOFValues(node.get_config());
-                robot->GetDOFValues(v);
-                robot->GetController()->SetDesired(v);
-                while (!robot->GetController()->IsDone()) {
-                    usleep(1000);
-                }
-            }
-            usleep(1000 * 100);
-        }
-
-
-//        env->plot3()
-
+//        std::cout << "Press ENTER to continue...";
+//        env->GetMutex().unlock();
+//        while(std::cin.ignore( std::numeric_limits<std::streamsize>::max(), '\n' )){
+//            for (auto node : path.first) {
+//                std::vector<double> v;
+//
+//                env->GetMutex().lock();
+//                robot->SetActiveDOFValues(node.get_config());
+//                robot->GetDOFValues(v);
+//                robot->GetController()->SetDesired(v);
+//                env->GetMutex().unlock();
+//
+//                while (!robot->GetController()->IsDone()) {
+//                    usleep(1000);
+//                }
+//            }
+//            usleep(1000 * 100);
+//        }
         return true;
     }
 };

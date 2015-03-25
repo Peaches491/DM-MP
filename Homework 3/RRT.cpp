@@ -37,7 +37,7 @@ RRT::RRT(RRTConfig *cfg)
 *       Should be 0 < goal_freq < 1 to ensure probabilistic completeness
 *  @return A vector of RRTNode objects, in the desired order.
 */
-vector<RRTNode> RRT::do_search(vector<double> _start_cfg, vector<double> _goal_cfg,
+pair<vector<RRTNode>, vector<RRTNode> > RRT::do_search(vector<double> _start_cfg, vector<double> _goal_cfg,
         double step_size, double goal_freq) {
     std::vector<RRTNode> path;
     start_config = _start_cfg;
@@ -139,15 +139,12 @@ vector<RRTNode> RRT::do_search(vector<double> _start_cfg, vector<double> _goal_c
 
     // Reverse the path. Now start --> goal.
     vector<RRTNode> path_fwd;
+    vector<RRTNode> path_smooth;
     for(long i = path.size(); i-- > 0;) {
         path_fwd.push_back(path.at(i));
-        cout << i << " : " << path.at(i)._id << ": ";
-        for(auto joint_val : path.at(i).get_config()) {
-            cout << joint_val << ", ";
-        }
-        cout << endl;
+        path_smooth.push_back(path.at(i));
     }
-    return path_fwd;
+    return pair<vector<RRTNode>, vector<RRTNode> >(path_fwd, path_smooth);
 }
 
 

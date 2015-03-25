@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #HW3 for RBE 595/CS 525 Motion Planning
-import time
+import time, sys
 import openravepy
 from openravepy import *
 
@@ -86,38 +86,32 @@ if __name__ == "__main__":
 
         print("Joint Weights: ", robot.GetActiveDOFWeights())
 
+        if len(sys.argv) > 1:
+            goal_freq = sys.argv[1]
+        else:
+            goal_freq = 0.15
+
         cmd = 'RunRRT '
         cmd += '-n ' + str(len(goalconfig)) + ' '
         # cmd += '-s ' + str([float(x) for x in robot.GetActiveDOFValues()]).translate(None, "[],") + ' '
         cmd += '-s ' + str([float(x) for x in startconfig]).translate(None, "[],") + ' '
         cmd += '-g ' + str(goalconfig).translate(None, "[],") + ' '
         cmd += '-d ' + str(0.1) + ' '
-        cmd += '-f ' + str(0.15) + ' '
+        cmd += '-f ' + str(goal_freq) + ' '
         # cmd += '-f ' + str(1.00) + ' '
         cmd += '-i ' + str([int(robot.GetJointFromDOFIndex(x).IsCircular(0)) for x in robot.GetActiveDOFIndices()]).translate(None, "[],") + ' '
 
         print "Sending command"
         print cmd
 
+        import time
 
-        if False:
-            dist = math.sqrt(math.fsum([(a-b)**2 for a, b in zip(goalconfig, startconfig)]))
-            steps = math.floor(math.sqrt(math.fsum([(a-b)**2 for a, b in zip(goalconfig, startconfig)])) / 0.05)
-            increments = [(a-b)/steps for a, b in zip(goalconfig, startconfig)]
+        t0 = time.time()
+        print MyNewModule.SendCommand(cmd)
+        t1 = time.time()
 
-            current_step = startconfig
-            for i in range(0, int(steps+1)):
-                current_step = [a+(b*i) for a, b in zip(startconfig, increments)]
-                print i, current_step
-
-                with env:
-                    robot.SetActiveDOFValues(current_step)
-                    robot.GetController().SetDesired(robot.GetDOFValues())
-                waitrobot(robot)
-                print "Collides:", env.CheckCollision(robot)
-                time.sleep(0.5)
-        else:
-            print MyNewModule.SendCommand(cmd)
+        with open("samples.txt", "a") as myfile:
+            myfile.write(str(goal_freq) + ", " + str(t1-t0))
 
         # ### END OF YOUR CODE ###
     waitrobot(robot)
