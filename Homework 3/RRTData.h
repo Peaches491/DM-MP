@@ -10,7 +10,7 @@ private:
     std::vector<double> _config;
 public:
     static int _currentID;
-    const int _id;
+    int _id;
     int _parent_id;
 
     double dist_to(std::vector<double>* _values, RRTConfig* cfg, bool use_weights=false);
@@ -27,6 +27,12 @@ public:
     }
     double get_joint(int joint_idx) {
         return _config[joint_idx];
+    }
+    RRTNode& operator=(const RRTNode& node){
+        this->_id = node._id;
+        this->_parent_id = node._parent_id;
+        this->_config = node._config;
+        return *this;
     }
 };
 
