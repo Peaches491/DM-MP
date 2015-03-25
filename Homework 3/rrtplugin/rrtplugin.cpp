@@ -240,6 +240,11 @@ public:
         cout << "Smooth length: " << path.second.size() << endl;
         cout << endl;
 
+        if(path.first.size() < 2) {
+            cout << endl;
+            cout << "*** Planning failed *** Allotted time exhausted. Re-run to try again." << endl;
+            cout << endl;
+        }
 
         sout << rrt->search_time/1000000.0L << ", ";
         sout << rrt->smooth_time/1000000.0L << ", ";
