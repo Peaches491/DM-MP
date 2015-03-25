@@ -30,6 +30,8 @@ public:
     RRTConfig* cfg;
     NodeTree root;
 
+    unsigned long long search_time = 0, smooth_time = 0;
+
     RRT(RRTConfig* cfg);
     std::pair<std::vector<RRTNode>, std::vector<RRTNode> > do_search(std::vector<double> start_config, std::vector<double> _goal_cfg,
         double step_size, double goal_freq);

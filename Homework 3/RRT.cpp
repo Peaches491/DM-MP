@@ -14,6 +14,14 @@ vector<OpenRAVE::GraphHandlePtr> handles;
 OpenRAVE::GraphHandlePtr goal_handle;
 vector<float> points;
 
+typedef unsigned long long timestamp_t;
+static timestamp_t get_timestamp ()
+{
+    struct timeval now;
+    gettimeofday (&now, NULL);
+    return now.tv_usec + (timestamp_t)now.tv_sec * 1000000;
+}
+
 /*
 *  Simple constructor for a new RRT object. Provides RRT-Connect searching for
 *  N-DOF serial manipulators.
@@ -25,6 +33,7 @@ RRT::RRT(RRTConfig *cfg)
         : sout(cfg->sout), cfg(cfg), root(NodeTree(cfg)) {
     time_t seed = time(NULL);
     _rand = std::default_random_engine(1427255970);
+//    _rand = std::default_random_engine(seed);
     cout << "Random Seed: " << seed;
 }
 
@@ -56,6 +65,9 @@ pair<vector<RRTNode>, vector<RRTNode> > RRT::do_search(vector<double> _start_cfg
     vector<double> smp;
     std::pair<bool, vector<double> > smp_pair = pair<bool, vector<double>>(true, _goal_cfg);
     int iter = 1;
+
+    this->search_time = get_timestamp();
+
     for (iter = 1; iter < cfg->max_iter; iter++) {
         // Sample the space for non-colliding point= sample(goal_freq, true);
         smp = smp_pair.second;
@@ -97,20 +109,15 @@ pair<vector<RRTNode>, vector<RRTNode> > RRT::do_search(vector<double> _start_cfg
         smp_pair = sample(goal_freq, true);
     }
 
+    this->search_time = get_timestamp() - this->search_time;
 
     if (iter == cfg->max_iter) {
         cout << "Maximum number of Iterations reached. Goal not found." << endl;
     } else {
         cout << "Goal Reached!" << endl;
-        cout << "Path:" << endl;
         // Build the path, in reverse at first. Goal --> start
         while (true) {
-//            cout << latest_id->_id << ": ";
             path.push_back(root.get_nodes()->at(latest_id));
-//            for(auto joint_val : latest_id->get_config()) {
-//                cout << joint_val << ", ";
-//            }
-//            cout << endl;
             if (latest_id == 0) {
                 break;
             }
@@ -118,20 +125,6 @@ pair<vector<RRTNode>, vector<RRTNode> > RRT::do_search(vector<double> _start_cfg
         }
     }
     cout << endl;
-
-    cout << "Start " << root.get_nodes()->at(0)._id << ": ";
-    for(auto node : root.get_nodes()->at(0).get_config()){
-        cout << node << ", ";
-    }
-    cout << endl;
-
-//    for(auto node : root.get_nodes()) {
-//        cout << node._id << " -> " << node._parent_id << " : ";
-//        for(auto joint_val : node.get_config()) {
-//            cout << joint_val << ", ";
-//        }
-//        cout << endl;
-//    }
 
     // Reverse the path. Now start --> goal.
     vector<RRTNode> path_fwd;
@@ -146,7 +139,10 @@ pair<vector<RRTNode>, vector<RRTNode> > RRT::do_search(vector<double> _start_cfg
     goal_handle->SetShow(false);
     handles.empty();
 
+
+    this->smooth_time = get_timestamp();
     smooth(path_smooth, step_size);
+    this->smooth_time = get_timestamp() - this->smooth_time;
 
     return pair<vector<RRTNode>, vector<RRTNode> >(path_fwd, path_smooth);
 }
@@ -328,33 +324,13 @@ void RRT::smooth(std::vector<RRTNode>& path, double step_size){
         vector<float> pline;
         if(connect_points(start, end, step_size, cfg, true).first) {
 //            cout << "Can connect! " << idx_a << " " << idx_b << endl;
-
-//            cfg->robot->SetActiveDOFValues(start);
-//            OpenRAVE::RobotBase::ManipulatorPtr manip = cfg->robot->GetActiveManipulator();
-//            OpenRAVE::RaveVector<OpenRAVE::dReal> trans = manip->GetEndEffectorTransform().trans;
-//            pline.push_back(trans.x);
-//            pline.push_back(trans.y);
-//            pline.push_back(trans.z);
-//            cfg->robot->SetActiveDOFValues(end);
-//            trans = manip->GetEndEffectorTransform().trans;
-//            pline.push_back(trans.x);
-//            pline.push_back(trans.y);
-//            pline.push_back(trans.z);
-//            lineHandles.push_back(cfg->env->drawlinestrip(&pline[0], 2, sizeof(float)*3, 2.0, OpenRAVE::RaveVector<float>(0.0, 0.0, 1.0, 1)));
-//            pline.clear();
-
             pair<bool, vector<RRTNode> > segment = connect_points(start, end, step_size, cfg);
 //            cout << "  Build segment of length " << segment.second.size() << endl;
-
             path.erase(path.begin()+idx_a, path.begin()+idx_b);
 //            cout << "  Erased old!" << endl;
-
             path.insert(path.begin()+idx_a, segment.second.begin(), segment.second.end());
 //            cout << "  Inserted new!" << endl;
 //            cout << "  New Length: " << path.size() << endl;
-
-        } else {
-//            cout << "Can't connect!" << endl;
         }
     }
 }

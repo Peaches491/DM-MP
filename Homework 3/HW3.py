@@ -111,11 +111,11 @@ if __name__ == "__main__":
         t1 = time.time()
 
         with open("samples.txt", "a") as myfile:
-            myfile.write(str(goal_freq) + ", " + str(t1-t0) + ", ")
-            if "success" in result:
-                myfile.write(str(1) + "\n")
-            else:
-                myfile.write(str(0) + "\n")
+            myfile.write(result)
+            # if "success" in result:
+            #     myfile.write(str(1) + "\n")
+            # else:
+            #     myfile.write(str(0) + "\n")
 
 
         # ### END OF YOUR CODE ###

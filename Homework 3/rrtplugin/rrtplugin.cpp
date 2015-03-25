@@ -1,5 +1,6 @@
 
 #include <openrave/plugin.h>
+#include <openrave/planningutils.h>
 
 #include <algorithm>
 #include <cassert>
@@ -203,31 +204,49 @@ public:
         handles.push_back(env->plot3(&points[0], (int)(points.size()/3), sizeof(float)*3, 3.0, OpenRAVE::RaveVector<double>({1.0, 0.3, 0.3, 1})));
         handles.push_back(env->plot3(&short_points[0], (int)(short_points.size()/3), sizeof(float)*3, 3.0, OpenRAVE::RaveVector<double>({0.3, 0.3, 1.0, 1})));
 
-        std::cout << "Press ENTER to continue...";
         env->GetMutex().unlock();
-        while(std::cin.ignore( std::numeric_limits<std::streamsize>::max(), '\n' )){
-            for (auto node : path.second) {
-                std::vector<double> v;
+        env->GetMutex().lock();
+        robot->SetActiveDOFValues(start_config);
+        TrajectoryBasePtr traj = RaveCreateTrajectory(env);
+        traj->Init(robot->GetActiveConfigurationSpecification());
+        std::vector<double> active_values;
+        robot->GetActiveDOFValues(active_values);
+        traj->Insert(0, active_values);
 
-                env->GetMutex().lock();
-                robot->SetActiveDOFValues(node.get_config());
-                robot->GetDOFValues(v);
-                robot->GetController()->SetDesired(v);
-                env->GetMutex().unlock();
+        uint i = 0;
+        for(i = 0; i < path.second.size(); i++){
+            traj->Insert(i+1, path.second.at(i).get_config());
+        }
+        traj->Insert(i + 1, goal_config);
 
-                while (!robot->GetController()->IsDone()) {
-                    usleep(1000);
-                }
-            }
-            usleep(1000 * 100);
+        planningutils::RetimeActiveDOFTrajectory(traj, robot, false, 3, 1, "ParabolicTrajectoryRetimer");
+        robot->GetController()->SetPath(traj);
+        env->GetMutex().unlock();
+
+        while (!robot->GetController()->IsDone()) {
+            usleep(1000);
         }
 
-        if(path.first.size() > 2){
-            sout << "success";
-        } else {
-            sout << "failure";
-        }
+//        if(path.first.size() > 2){
+//            sout << "success";
+//        } else {
+//            sout << "failure";
+//        }
 
+        cout << "Search time: " << rrt->search_time/1000000.0L << endl;
+        cout << "Smooth time: " << rrt->smooth_time/1000000.0L << endl;
+        cout << "Node sampled: " << rrt->root.get_nodes()->size() << endl;
+        cout << "Unsmooth length: " << path.first.size() << endl;
+        cout << "Smooth length: " << path.second.size() << endl;
+        cout << endl;
+
+
+        sout << rrt->search_time/1000000.0L << ", ";
+        sout << rrt->smooth_time/1000000.0L << ", ";
+        sout << rrt->root.get_nodes()->size() << ", ";
+        sout << path.first.size() << ", ";
+        sout << path.second.size();
+        sout << endl;
         return true;
     }
 };
