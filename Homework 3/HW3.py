@@ -110,7 +110,7 @@ if __name__ == "__main__":
         result = MyNewModule.SendCommand(cmd)
         t1 = time.time()
 
-        with open("samples.txt", "a") as myfile:
+        with open("samples_30.txt", "a") as myfile:
             myfile.write(result)
             # if "success" in result:
             #     myfile.write(str(1) + "\n")

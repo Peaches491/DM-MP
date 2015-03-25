@@ -32,8 +32,8 @@ static timestamp_t get_timestamp ()
 RRT::RRT(RRTConfig *cfg)
         : sout(cfg->sout), cfg(cfg), root(NodeTree(cfg)) {
     time_t seed = time(NULL);
-    _rand = std::default_random_engine(1427255970);
-//    _rand = std::default_random_engine(seed);
+//    _rand = std::default_random_engine(1427255970);
+    _rand = std::default_random_engine(seed);
     cout << "Random Seed: " << seed;
 }
 
@@ -71,6 +71,11 @@ pair<vector<RRTNode>, vector<RRTNode> > RRT::do_search(vector<double> _start_cfg
     for (iter = 1; iter < cfg->max_iter; iter++) {
         // Sample the space for non-colliding point= sample(goal_freq, true);
         smp = smp_pair.second;
+
+        if((get_timestamp() - search_time)/1000000.0L > 180){
+            this->search_time = get_timestamp() - this->search_time;
+            return pair<vector<RRTNode>, vector<RRTNode> >(vector<RRTNode>(), vector<RRTNode>());
+        }
 
         // Find the ID of the nearest node to the sample.
         int nn = root.nearest_node(smp);

@@ -204,28 +204,28 @@ public:
         handles.push_back(env->plot3(&points[0], (int)(points.size()/3), sizeof(float)*3, 3.0, OpenRAVE::RaveVector<double>({1.0, 0.3, 0.3, 1})));
         handles.push_back(env->plot3(&short_points[0], (int)(short_points.size()/3), sizeof(float)*3, 3.0, OpenRAVE::RaveVector<double>({0.3, 0.3, 1.0, 1})));
 
-        env->GetMutex().unlock();
-        env->GetMutex().lock();
-        robot->SetActiveDOFValues(start_config);
-        TrajectoryBasePtr traj = RaveCreateTrajectory(env);
-        traj->Init(robot->GetActiveConfigurationSpecification());
-        std::vector<double> active_values;
-        robot->GetActiveDOFValues(active_values);
-        traj->Insert(0, active_values);
-
-        uint i = 0;
-        for(i = 0; i < path.second.size(); i++){
-            traj->Insert(i+1, path.second.at(i).get_config());
-        }
-        traj->Insert(i + 1, goal_config);
-
-        planningutils::RetimeActiveDOFTrajectory(traj, robot, false, 3, 1, "ParabolicTrajectoryRetimer");
-        robot->GetController()->SetPath(traj);
-        env->GetMutex().unlock();
-
-        while (!robot->GetController()->IsDone()) {
-            usleep(1000);
-        }
+//        env->GetMutex().unlock();
+//        env->GetMutex().lock();
+//        robot->SetActiveDOFValues(start_config);
+//        TrajectoryBasePtr traj = RaveCreateTrajectory(env);
+//        traj->Init(robot->GetActiveConfigurationSpecification());
+//        std::vector<double> active_values;
+//        robot->GetActiveDOFValues(active_values);
+//        traj->Insert(0, active_values);
+//
+//        uint i = 0;
+//        for(i = 0; i < path.second.size(); i++){
+//            traj->Insert(i+1, path.second.at(i).get_config());
+//        }
+//        traj->Insert(i + 1, goal_config);
+//
+//        planningutils::RetimeActiveDOFTrajectory(traj, robot, false, 3, 1, "ParabolicTrajectoryRetimer");
+//        robot->GetController()->SetPath(traj);
+//        env->GetMutex().unlock();
+//
+//        while (!robot->GetController()->IsDone()) {
+//            usleep(1000);
+//        }
 
 //        if(path.first.size() > 2){
 //            sout << "success";
@@ -247,6 +247,9 @@ public:
         sout << path.first.size() << ", ";
         sout << path.second.size();
         sout << endl;
+
+        env->GetMutex().unlock();
+
         return true;
     }
 };
